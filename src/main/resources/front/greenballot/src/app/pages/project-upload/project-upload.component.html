@@ -1,0 +1,206 @@
+<div class="background">
+  <p-toast></p-toast>
+  <div class="justify-content-center">
+    <div class="card">
+      <p-card header="Basic Information" subheader="Please provide us with some basic information about your project."
+              class="shadow width">
+
+        <p-accordion [multiple]="true" [activeIndex]="activeIndices">
+          <p-accordionTab header="Basic Project Information*">
+            <div [ngClass]="{ 'input-error': invalidFields['name'] }" class="input-wrapper">
+              <label for="name">Project Name</label>
+              <input pInputText class="pInputText" type="text" id="name" [(ngModel)]="projectDetails.name"/>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['category'] }">
+              <label style="height:44px;" for="project-category">Project Category</label>
+              <p-dropdown [style.width]="150" [options]="projectCategories" [(ngModel)]="projectDetails.category"
+                          placeholder="Select a Category" id="project-category" optionLabel="name"/>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['description'] }">
+              <label for="description" style="height: 83px;">Project Description</label>
+              <textarea id="description" rows="5" cols="30" pInputTextarea style="margin-top: 0px; width:293px;"
+                        [(ngModel)]="projectDetails.description"></textarea>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['targetOutcomes'] }">
+              <label for="target-outcomes" style="height: 83px;">Target Outcomes</label>
+              <textarea id="target-outcomes" rows="5" cols="30" pInputTextarea style="margin-top: 0px; width:293px;"
+                        [(ngModel)]="projectDetails.targetOutcomes"></textarea>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['keywords'] }">
+              <label for="keywords" style="height: 83px;">Keywords</label>
+              <textarea id="keywords" rows="5" cols="30" pInputTextarea style="margin-top: 0px; width:293px;"
+                        [(ngModel)]="projectDetails.keywords"></textarea>
+            </div>
+
+            <div class="input-wrapper">
+              <label for="location"  [ngClass]="{ 'input-error': invalidFields['location'] }">Location</label>
+              <p-button (onClick)="showLocationDialog()" label="Show"/>
+
+              <p-dialog id="location" header="Pick Location" (onShow)="onDialogShow()" [modal]="true"
+                        [(visible)]="locationDialogVisible"
+                        [style]="{ width: '50rem' }">
+                <div #mapElement style="height: 500px">
+
+                </div>
+                <p-button label="Cancel" severity="secondary" (onClick)="locationDialogVisible = false"/>
+                <p-button label="Save" (onClick)="saveSelectedCoordinates()"/>
+              </p-dialog>
+            </div>
+
+          </p-accordionTab>
+
+          <p-accordionTab header="Timeline*">
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['startDate'] }">
+              <label for="start-date" style="height:44px;">Start Date</label>
+              <p-calendar [showButtonBar]="true" [showTime]="false" id="start-date" [showIcon]="true" dateFormat="dd.mm.yy" [(ngModel)]="projectDetails.startDate"></p-calendar>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['endDate'] }">
+              <label for="end-date" style="height:44px;">End Date</label>
+              <p-calendar [showButtonBar]="true" [showTime]="false" id="end-date" [showIcon]="true" dateFormat="dd.mm.yy" [(ngModel)]="projectDetails.endDate"></p-calendar>
+            </div>
+          </p-accordionTab>
+
+          <p-accordionTab header="Project Lead*">
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['projectLeadName'] }">
+              <label for="project-lead-name">Project Lead Name</label>
+              <input pInputText style="width:293px; height:56px;" class="pInputText" type="text" id="project-lead-name"
+                     [(ngModel)]="projectDetails.projectLeadName"/>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['projectLeadContact'] }">
+              <label style="height:45px;" for="project-lead-contact">Project Lead Contact</label>
+              <p-inputMask [(ngModel)]="projectDetails.projectLeadContact" id="project-lead-contact" mask="99(999)999-9999"></p-inputMask>
+            </div>
+          </p-accordionTab>
+          <p-accordionTab header="Funding Information*">
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['fundingGoal'] }">
+              <label for="funding-goal" style="height:45px !important;">Funding Goal</label>
+              <p-inputNumber required
+                             id="funding-goal"
+                             [(ngModel)]="projectDetails.fundingGoal"
+                             mode="currency"
+                             currency="USD"/>
+            </div>
+
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['fundingAllocation'] }">
+              <label for="allocations" class="allocation-label">Budget Allocation</label>
+              <p-button (onClick)="showBudgetDialog()" label="Show"/>
+              <p-dialog header="Allocate Budget" [modal]="true" [(visible)]="budgetDialogVisible"
+                        [style]="{ width: '25rem' }">
+
+                <form id="allocations" [formGroup]="fundingForm">
+                  <div formArrayName="allocations" *ngFor="let allocation of allocations.controls; let i = index">
+                    <div [formGroupName]="i" class="allocation-row">
+                      <input style="width: 200px;
+                padding-left:8px !important;
+                 border-left-width: 6px;
+                 border-radius: 6px;"
+                             class="pInputText"
+                             type="text"
+                             formControlName="title"
+                             placeholder="Enter title (e.g., Equipment)"/>
+                      <input style=" border-radius: 6px;
+                width: 50px !important;"
+                             class="pInputText " type="number" formControlName="percentage"
+                             placeholder="Enter percentage"
+                             (keypress)="preventNegativeInput($event)"/>
+
+                      <p-button [rounded]="true" class="custom-button" icon="pi pi-times" severity="danger"
+                                type="button"
+                                (click)="removeAllocation(i)" *ngIf="allocations.length > 1">x
+                      </p-button>
+                    </div>
+                  </div>
+
+                  <div *ngIf="!isTotalPercentageValid()" class="error">
+                    Total percentage must not exceed 100%.
+                  </div>
+
+                  <div style="padding: 1rem;">Total Percentage: {{ getTotalPercentage() }}%</div>
+
+                  <p-button class="default-button-padding" type="button" (click)="addAllocation()">Add Allocation
+                  </p-button>
+                </form>
+
+                <p-button class="default-button-padding" label="Cancel" severity="secondary"
+                          (onClick)="budgetDialogVisible = false"/>
+                <p-button class="default-button-padding" label="Save" (onClick)="saveAllocationsToProjectDetails()"/>
+
+              </p-dialog>
+
+            </div>
+          </p-accordionTab>
+          <p-accordionTab header="Supporting Media and Resources*">
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['proposal'] }">
+              <label for="project-proposal">Project Proposal(s)</label>
+              <p-fileUpload id="project-proposal" name="file[]" (onUpload)="onUpload($event)" (uploadHandler)="onProposalUpload($event)"
+                            customUpload="true" [multiple]="true" accept=".pdf, .doc, .docx" maxFileSize="50000000">
+                <ng-template pTemplate="content">
+                  <ul *ngIf="uploadedFiles.length">
+                    <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+                  </ul>
+                </ng-template>
+              </p-fileUpload>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['presentation'] }">
+              <label for="project-presentation">Upload Presentation(s)</label>
+              <p-fileUpload id="project-presentation" name="file[]" (onUpload)="onUpload($event)" (uploadHandler)="onPresentationUpload($event)"
+                            customUpload="true" accept=".pptx, .ppsx, .key" maxFileSize="50000000">
+                <ng-template pTemplate="content">
+                  <ul *ngIf="uploadedFiles.length">
+                    <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>
+                  </ul>
+                </ng-template>
+              </p-fileUpload>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['videoUrl'] }">
+              <label for="video-url">Video Presentation</label>
+              <input pInputText style="width:293px;" class="pInputText" type="text" id="video-url" [(ngModel)]="projectDetails.videoUrl"/>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['websiteUrl'] }">
+              <label for="website-url">Website URL</label>
+              <input pInputText style="width:293px;" class="pInputText" type="text" id="website-url" [(ngModel)]="projectDetails.websiteUrl"/>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['socialMediaLinks'] }">
+              <label for="twitter-url">X-URL</label>
+              <input pInputText style="width:293px;" class="pInputText" type="text" id="twitter-url" [(ngModel)]="projectDetails.socialMediaLinks"/>
+            </div>
+          </p-accordionTab>
+
+          <p-accordionTab header="Team and Impact*">
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['teamMembers'] }">
+              <label for="team-members" style="height: 83px;">Team Members</label>
+              <textarea id="team-members" rows="5" cols="30" pInputTextarea style="margin-top: 0px; width:293px;"
+                        [(ngModel)]="projectDetails.teamMembers"></textarea>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['impactGoals'] }">
+              <label for="impact-goals" style="height: 83px;">Impact Goals</label>
+              <textarea id="impact-goals" rows="5" cols="30" pInputTextarea style="margin-top: 0px; width:293px;"
+                        [(ngModel)]="projectDetails.impactGoals"></textarea>
+            </div>
+          </p-accordionTab>
+
+          <p-accordionTab header="Project Sustainability and Risks*">
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['challengesAndRisks'] }">
+              <label for="challenges-risks" style="height: 83px;">Challenges and Risks</label>
+              <textarea id="challenges-risks" rows="5" cols="30" pInputTextarea style="margin-top: 0px; width:293px;"
+                        [(ngModel)]="projectDetails.challengesAndRisks"></textarea>
+            </div>
+            <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['sustainabilityPlan'] }">
+              <label for="sustainability-plan" style="height: 83px;">Sustainability Plan</label>
+              <textarea id="sustainability-plan" rows="5" cols="30" pInputTextarea style="margin-top: 0px; width:293px;"
+                        [(ngModel)]="projectDetails.sustainabilityPlan"></textarea>
+            </div>
+          </p-accordionTab>
+        </p-accordion>
+        <app-captcha></app-captcha>
+      <div class="justify-content-center">
+        <p-button label="Submit" class="default-button-padding" [rounded]="true" severity="success" (onClick)="submit()"/>
+        <p-button label="Clear Data" class="default-button-padding" [rounded]="true" severity="contrast" (onClick)="clearFormAndCache()"/>
+        <p-button label="Fill" class="default-button-padding" [rounded]="true" severity="contrast" (onClick)="fillWithDummyData()"/>
+      </div>
+
+      </p-card>
+
+    </div>
+  </div>
+</div>

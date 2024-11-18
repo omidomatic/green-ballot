@@ -1,0 +1,126 @@
+<div class="background justify-content-center">
+  <p-toast></p-toast>
+  <p-card header="Account" subheader="Your Account Information" class="card">
+
+    <div *ngIf="!passwordEditModeEnabled">
+      <div class="input-wrapper">
+        <label for="firstname">First Name</label>
+        <input pInputText class="pInputText" [disabled]="!editMode" type="text" id="firstname" pInputText
+               [(ngModel)]="userInfo.firstname"/>
+      </div>
+
+      <div class="input-wrapper">
+        <label for="lastname">Last Name</label>
+        <input pInputText class="pInputText" [disabled]="!editMode" type="text" id="lastname" pInputText
+               [(ngModel)]="userInfo.lastname"/>
+      </div>
+
+      <div class="input-wrapper">
+        <label for="email">Email</label>
+        <input pInputText class="pInputText" [disabled]="!editMode" type="text" id="email" pInputText
+               [(ngModel)]="userInfo.email"/>
+      </div>
+
+      <div class="input-wrapper">
+        <label for="walletAddress">Wallet Address</label>
+        <input pInputText class="pInputText" [disabled]="!editMode" type="text" id="walletAddress" pInputText
+               [(ngModel)]="userInfo.walletAddress"/>
+      </div>
+    </div>
+    <div *ngIf="passwordEditModeEnabled">
+      <div class="input-wrapper">
+        <label for="old-password">Current Password</label>
+        <input pInputText class="pInputText" type="password" [disabled]="!editMode" id="old-password" pInputText
+               [(ngModel)]="changePasswordRequest.currentPassword"/>
+      </div>
+      <div class="input-wrapper">
+        <label for="new-password">New Password</label>
+        <input pInputText class="pInputText" type="password" [disabled]="!editMode" id="new-password" pInputText
+               [(ngModel)]="changePasswordRequest.newPassword"/>
+      </div>
+      <div class="input-wrapper">
+        <label for="repeat-password">Repeat Password</label>
+        <input pInputText class="pInputText" type="password" [disabled]="!editMode" id="repeat-password" pInputText
+               [(ngModel)]="changePasswordRequest.confirmationPassword"/>
+      </div>
+    </div>
+
+    <app-captcha *ngIf="editMode"></app-captcha>
+
+    <div class="button-container  p-button-outlined">
+
+      <button
+        *ngIf="!passwordEditModeEnabled"
+        pButton
+        pRipple
+        label="Edit"
+        (click)="updateInfo()"
+        class="p-button-success">
+      </button>
+      <button
+        *ngIf="editMode"
+        pButton
+        pRipple
+
+        label="Submit"
+        (click)="submit()"
+        class="p-button-success ">
+      </button>
+      <button
+        pButton
+        pRipple
+        label="{{(passwordEditModeEnabled==true)?'Cancel':'Change Password'}}"
+        (click)="passwordEditMode()"
+        class="p-button-success ">
+      </button>
+    </div>
+  </p-card>
+
+
+</div>
+<div class="justify-contents-center">
+
+  <p-card header="Your Projects" subheader="Your Projects List" class="card">
+    <p-table
+      [value]="projects"
+      [paginator]="true"
+      [rows]="10"
+      [totalRecords]="totalRecords"
+      [lazy]="true"
+      (onLazyLoad)="loadProjects($event)"
+      [loading]="loading"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th *ngFor="let col of cols" [pSortableColumn]="col.field">
+            {{ col.header }}
+            <p-sortIcon [field]="col.field"></p-sortIcon>
+          </th>
+          <th>Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-project>
+        <tr>
+          <!--          <td *ngFor="let col of cols">{{ project[col.field] }}</td>-->
+
+          <td>{{project.name}}</td>
+          <td>{{project.category}}</td>
+          <td>{{project.fundingGoal}}</td>
+          <td>{{project.startDate}}</td>
+          <td>{{project.endDate}}</td>
+          <td>{{project.voteCount}}</td>
+          <td class="justify-content-center">
+            <p-tag styleClass="table-status" [value]="project.projectStatus" [severity]="getSeverity(project.projectStatus)"></p-tag>
+          </td>
+          <td>
+            <p-button type="button" rounded="true" icon="pi pi-pencil" class="p-button-text"
+                      [styleClass]="'small-button'" severity="info"></p-button>
+            <p-button type="button" rounded="true" icon="pi pi-trash" class="p-button-text"
+                      [styleClass]="'small-button'" severity="danger"></p-button>
+
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-card>
+</div>

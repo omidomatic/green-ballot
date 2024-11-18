@@ -1,0 +1,13 @@
+<div class="card">
+  <p-galleria
+    [value]="this.images"
+    [autoPlay]="true"
+    [showIndicators]="true"
+    [showThumbnails]="false"
+    [responsiveOptions]="this.responsiveOptions"
+    [containerStyle]="{ 'width': 'auto' }">
+    <ng-template pTemplate="item" let-item>
+      <img [src]="item.itemImageSrc" style="width: 100%; display: block;" />
+    </ng-template>
+  </p-galleria>
+</div>

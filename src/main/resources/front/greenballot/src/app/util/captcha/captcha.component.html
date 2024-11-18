@@ -1,0 +1,5 @@
+<div class="justify-content-center">
+  <p-toast></p-toast>
+  <img (click)="fetchCaptcha()" *ngIf="captchaUrl" [src]="captchaUrl" alt="Captcha"/>
+  <input autocomplete="off" class="padding" nbInput  [required]="true" (keyup)="validateCaptcha()" type="text" placeholder="Enter Captcha" [(ngModel)]="userInputCaptcha">
+</div>

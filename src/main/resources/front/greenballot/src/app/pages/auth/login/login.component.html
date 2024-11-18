@@ -1,0 +1,44 @@
+<div class="background ">
+  <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
+    <div class=" justify-content-center flex flex-column align-items-center">
+      <p-toast></p-toast>
+      <p-card header="Login">
+        <div class="card">
+
+          <input [(ngModel)]="email" class=" p-inputtext p-component p-element w-full p-3 md:w-30rem p-password-input "
+                 id="email1" type="text" placeholder="Email address"
+                 style="padding:0.80rem; width:17rem; margin-left:10px;">
+
+          <p-password class="add-margin" id="password1" [(ngModel)]="password" [feedback]="false" placeholder="Password"
+                      [toggleMask]="true" styleClass="mb-5" inputStyleClass="w-full p-3 md:w-30rem"></p-password>
+          <div class="flexy justify-content-center-horizontal">
+            <p-button (click)="login()" severity="success" class=" button-padding" label="Login" class="w-full"
+                      styleClass="w-full"/>
+
+            <div class="button-padding">
+              <p-button (click)="register()" severity="success" class="add-margin button-padding" label="Register" class="w-full"
+                        styleClass="w-full"/>
+
+            </div>
+
+            <div class="button-padding">
+
+            </div>
+
+
+          </div>
+          <div>
+            <app-captcha></app-captcha>
+          </div>
+          <p-checkbox
+            [(ngModel)]="rememberToggle"
+            [binary]="true"
+            inputId="binary"
+            label="Remember me"
+            class="ng-invalid ng-dirty justify-content-center-horizontal  add-top-margin"/>
+        </div>
+
+      </p-card>
+    </div>
+  </div>
+</div>

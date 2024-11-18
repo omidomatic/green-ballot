@@ -1,0 +1,22 @@
+.background{
+  height: 100vh;
+  z-index: -1;
+  background-image: url("../../../assets/images/get-involved-banner.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.card{
+  position: sticky;
+  top: 20px; // Distance from the top of the viewport
+  z-index: 10; // Higher than the background to ensure it appears on top
+
+  padding: 1.5rem;
+  border-radius: 8px;
+
+}
+.shadow{
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); // Soft shadow for the floating effect
+
+}

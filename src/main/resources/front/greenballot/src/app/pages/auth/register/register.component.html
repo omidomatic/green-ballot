@@ -1,0 +1,50 @@
+<div class="background ">
+  <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
+    <div class=" justify-content-center flex flex-column align-items-center justify-content-center">
+
+      <p-card header="Register">
+        <div class="card">
+          <input [(ngModel)]="userDetails.firstname" class="p-inputtext p-component" id="firstname" type="text" placeholder="First Name">
+
+          <input [(ngModel)]="userDetails.lastname" class="p-inputtext p-component" id="lastname" type="text" placeholder="Last Name">
+
+          <input [(ngModel)]="userDetails.email" class="p-inputtext p-component" id="email" type="text" placeholder="Email Address">
+
+          <input [(ngModel)]="userDetails.walletAddress" class="p-inputtext p-component" id="walletAddress" type="text" placeholder="ERC20 Wallet Address(Optional)">
+
+          <p-password  #password="ngModel" [ngClass]="{
+    'valid-password': password.valid && password.touched,
+    'invalid-password': password.invalid && password.touched
+  }" [(ngModel)]="userDetails.password" id="password1"  class="w-full" styleClass="p-password p-component p-inputwrapper p-input-icon-right" [style]="{'width':'100%'}" [inputStyle]="{'width':'100%'}" placeholder="Password" ></p-password>
+          <p-password #repeatPassword="ngModel" [(ngModel)]="userDetails.repeatPassword"
+                      [ngClass]="{
+    'valid-password': repeatPassword.valid && repeatPassword.touched,
+    'invalid-password': repeatPassword.invalid && repeatPassword.touched
+  }"
+                      pattern="{{ password.value }}"  id="password2" class="w-full" styleClass="p-password p-component p-inputwrapper p-input-icon-right" [style]="{'width':'100%'}" [inputStyle]="{'width':'100%'}"  placeholder="Repeat Password" ></p-password>
+          <ng-container *ngIf="repeatPassword.invalid && repeatPassword.touched">
+            <p class="caption status-danger" *ngIf="repeatPassword.errors?.required">
+              Repeat password is required!
+            </p>
+            <p class="caption status-danger" *ngIf="repeatPassword.errors?.pattern">
+              Password & Confirm Password does not match.
+            </p>
+            <p class="caption status-danger" *ngIf="repeatPassword.errors?.minlength || repeatPassword.errors?.maxlength">
+              Password should contain
+              from {{ 8 }}
+              to {{ 32 }}
+              characters
+            </p>
+          </ng-container>
+          <app-captcha></app-captcha>
+          <div class="flexy">
+
+            <div class="button-padding">
+              <p-button severity="success" label="Register" (click)="register()" styleClass="w-full"></p-button>
+            </div>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

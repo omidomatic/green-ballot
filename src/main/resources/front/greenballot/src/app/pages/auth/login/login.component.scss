@@ -1,0 +1,49 @@
+.justify-content-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+.card {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  gap: 10px; /* Optional: Adds space between fields */
+}
+.card {
+  input,
+  label,
+  button {
+    width: 100%; /* Makes the fields take the full width of the container */
+    margin-bottom: 10px; /* Adds margin between fields */
+  }
+}
+.add-margin{
+  margin: 5px;
+  padding:5px;
+
+}
+.flexy{
+  display:flex;
+}
+.button-padding{
+  margin-left:14px;
+
+}
+.add-top-margin{
+  margin-top:10px;
+}
+
+.justify-content-center-horizontal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.background{
+
+  height: 100vh;
+  z-index: -1;
+  background-image: url("../../../../assets/images/sustainable-energy-campaign-tree-light-bulb-media-remix.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

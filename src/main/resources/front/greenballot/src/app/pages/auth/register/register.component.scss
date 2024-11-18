@@ -1,0 +1,64 @@
+.justify-content-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+p-card .card {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  gap: 15px; /* Adds space between fields */
+  width: 27rem;
+  input,
+  label,
+  p-password,
+  button {
+    width: 100% !important; /* Ensure elements take full width of the container */
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+
+  /* This targets the actual input inside the PrimeNG p-password component */
+  .p-password input {
+    width: 100% !important;
+  }
+
+  .flexy {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Space between buttons */
+  }
+
+  .button-padding {
+    padding: 10px; /* Padding around buttons */
+  }
+}
+
+.p-component{
+  width:27rem !important;
+}
+
+.add-margin {
+  margin: 5px;
+  padding: 5px;
+}
+
+.add-top-margin {
+  margin-top: 10px;
+}
+
+.justify-content-center-horizontal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.background {
+  height: 100vh;
+  z-index: -1;
+  background-image: url("../../../../assets/images/sustainable-energy-campaign-tree-light-bulb-media-remix.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

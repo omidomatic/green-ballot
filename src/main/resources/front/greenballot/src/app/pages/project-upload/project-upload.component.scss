@@ -1,0 +1,135 @@
+.background{
+  height: 100vh;
+  z-index: -1;
+  background-image: url("../../../assets/images/get-involved-banner.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat-y;
+}
+.justify-content-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.card{
+  position: sticky;
+  top: 20px; // Distance from the top of the viewport
+  z-index: 10; // Higher than the background to ensure it appears on top
+  width:770px;
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow: auto;
+}
+.shadow{
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); // Soft shadow for the floating effect
+
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: start;
+  margin-bottom: 8px; /* Optional: add some spacing between form rows */
+}
+
+.input-wrapper label {
+  background: linear-gradient(135deg, #614385 0%, #516395 100%); /* Apply your gradient or background color */
+  width: 200px; /* Fixed width for labels */
+  margin-right: 0rem; /* Space between label and input */
+  display: flex;
+  border-bottom-left-radius: 8px;
+  border-top-left-radius: 8px;
+  align-items: center;
+  align-self: stretch; /* Allows the label to stretch with the input field */
+  padding:8px;
+  color:#fff5f5;
+}
+
+.input-wrapper input {
+  flex: 1;
+  width:293px;
+  height: 40px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  font-size: 14px;
+}
+
+
+.pInputText {
+  background-color: rgba(204, 204, 204, 0.32);
+  height:36px !important;
+}
+
+::ng-deep .p-dropdown {
+  width: 300px; // Set your desired width
+}
+//::ng-deep .p-button {
+//  margin-right:10px;
+//}
+::ng-deep .default-button-padding .p-button{
+  margin:5px;
+}
+.allocation-row {
+  display: flex;
+  gap: 10px;
+  padding-top:20px;
+  padding-left:0px;
+
+}
+
+.error {
+  color: red;
+  font-weight: bold;
+}
+.custom-button .p-button {
+  width: 30px !important;
+  height: 30px !important;
+  font-size: 12px !important;
+  padding: 0.25rem !important; /* Adjust padding if needed */
+}
+::ng-deep .custom-button .p-button {
+  width: 30px !important;
+  height: 30px !important;
+  font-size: 12px !important;
+  padding: 0.25rem !important;
+}
+
+.allocation-label {
+  display: table-cell;
+  vertical-align: top;
+  padding-right: 1rem; /* Adds some space between the label and form */
+  width: 283px !important; /* Keeps the label's width fixed */
+}
+#allocations {
+  display: table-cell;
+  width: 100%;
+}
+.input-error {
+  border: 3px solid red !important;
+  border-radius:10px;
+}
+// Medium screens (768px and above)
+@media (max-width: 768px) {
+  ::ng-deep .p-dropdown {
+    width: 200px; // Set your desired width
+  }
+}
+
+// Small screens (576px and above)
+@media (max-width: 576px) {
+  ::ng-deep .p-dropdown {
+    width: 100px; // Set your desired width
+  }
+  ::ng-deep .p-inputtext {
+    width: 100px; // Set your desired width
+  }
+  ::ng-deep .pInputText  {
+    display: table-cell;
+    vertical-align: top;
+    padding-right: 1rem; /* Adds some space between the label and form */
+    width: 100px !important; /* Keeps the label's width fixed */
+  }
+
+}
