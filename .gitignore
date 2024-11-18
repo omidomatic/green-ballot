@@ -31,6 +31,6 @@ build/
 /node_modules
 /src/main/resources/front/greenballot/node_modules
 /src/main/resources/application.properties
-
+/src/main/resources/front/greenballot/src/assets
 ### VS Code ###
 .vscode/
