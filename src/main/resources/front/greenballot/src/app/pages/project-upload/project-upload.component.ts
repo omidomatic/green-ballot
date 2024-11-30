@@ -481,7 +481,7 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    //todo send update request for greenproject and write an endpoint
+
     if (this.captcha.isValidated) {
       if (this.isProjectDetailsComplete()) {
         this.projectDetails.category = this.projectDetails.category.name;
