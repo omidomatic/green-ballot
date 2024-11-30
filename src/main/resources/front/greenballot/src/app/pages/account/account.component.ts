@@ -3,7 +3,7 @@ import {CardModule} from "primeng/card";
 import {AccountService} from "../../service/account.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {ActivatedRoute, Router} from "@angular/router";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {Button, ButtonDirective, ButtonModule} from "primeng/button";
 import {Ripple, RippleModule} from "primeng/ripple";
 import {NgForOf, NgIf} from "@angular/common";
@@ -17,6 +17,13 @@ import {TableModule} from "primeng/table";
 import {GreenProject, GreenProjectService} from "../../service/green-project.service";
 import {InputIconModule} from "primeng/inputicon";
 import {TagModule} from "primeng/tag";
+import {DialogModule} from "primeng/dialog";
+import {AccordionModule} from "primeng/accordion";
+import {CalendarModule} from "primeng/calendar";
+import {DropdownModule} from "primeng/dropdown";
+import {FileUploadModule} from "primeng/fileupload";
+import {InputMaskModule} from "primeng/inputmask";
+import {InputNumberModule} from "primeng/inputnumber";
 
 
 @Component({
@@ -38,6 +45,14 @@ import {TagModule} from "primeng/tag";
     NgForOf,
     InputIconModule,
     TagModule,
+    DialogModule,
+    AccordionModule,
+    CalendarModule,
+    DropdownModule,
+    FileUploadModule,
+    InputMaskModule,
+    InputNumberModule,
+    ReactiveFormsModule,
   ],
   providers: [MessageService],
   templateUrl: './account.component.html',
@@ -82,7 +97,8 @@ export class AccountComponent implements OnInit, AfterViewInit {
               private messageService: MessageService,
               private activatedRoute: ActivatedRoute,
               private projectService: GreenProjectService,
-              private cdr: ChangeDetectorRef
+              private cdr: ChangeDetectorRef,
+
   ) {
   }
 
@@ -135,11 +151,15 @@ export class AccountComponent implements OnInit, AfterViewInit {
     }
   }
 
+  editProject(id:number){
+    this.router.navigate(['/new-project', {editMode:true, id:id}])
+  }
   ngAfterViewInit() {
 
     if (localStorage.getItem('access_token') != '') {
       this.accountService.getAccountInfo().subscribe((res: any) => {
           this.userInfo.userId = res.id;
+          console.log(this.userInfo.userId);
           this.userInfo.firstname = res.firstname;
           this.userInfo.lastname = res.lastname;
           this.userInfo.email = res.email;
@@ -154,6 +174,8 @@ export class AccountComponent implements OnInit, AfterViewInit {
             // Redirect to the login page
             this.router.navigate(['/login']);
           } else {
+            localStorage.setItem('access_token', '');
+            this.router.navigate(['/login']);
             console.error('An error occurred:', error);
           }
         }
@@ -237,6 +259,8 @@ export class AccountComponent implements OnInit, AfterViewInit {
     switch (status) {
       case 'REJECTED':
         return 'danger';
+      case 'DELETED':
+        return 'danger';
       case 'PENDING':
         return 'warning';
       case 'APPROVED':
@@ -252,5 +276,25 @@ export class AccountComponent implements OnInit, AfterViewInit {
     }
   }
 
+  deleteProject(id:number) {
+    this.projectService.deleteProject(id).subscribe({
+      next:(res)=>{
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Project Removed',
+        });
+        console.log(res);
+      },
+      error:(err)=>{
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to remove project.',
+        });
+        console.log(err)
+      }
+    })
+  }
 }
 

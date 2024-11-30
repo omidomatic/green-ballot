@@ -1,6 +1,6 @@
 <div class="background justify-content-center">
   <p-toast></p-toast>
-  <p-card header="Account" subheader="Your Account Information" class="card">
+  <p-card header="Account" subheader="Your Account Information." class="card">
 
     <div *ngIf="!passwordEditModeEnabled">
       <div class="input-wrapper">
@@ -108,16 +108,15 @@
           <td>{{project.fundingGoal}}</td>
           <td>{{project.startDate}}</td>
           <td>{{project.endDate}}</td>
-          <td>{{project.voteCount}}</td>
+          <td style="background-color: rgba(30,169,124,0.68)">{{project.voteCount}}</td>
           <td class="justify-content-center">
             <p-tag styleClass="table-status" [value]="project.projectStatus" [severity]="getSeverity(project.projectStatus)"></p-tag>
           </td>
           <td>
-            <p-button type="button" rounded="true" icon="pi pi-pencil" class="p-button-text"
-                      [styleClass]="'small-button'" severity="info"></p-button>
-            <p-button type="button" rounded="true" icon="pi pi-trash" class="p-button-text"
+            <p-button type="button" *ngIf="project.projectStatus=='PENDING'" rounded="true" icon="pi pi-pencil" class="p-button-text"
+                      [styleClass]="'small-button'" (click)="editProject(project.id)" severity="info"></p-button>
+            <p-button type="button" *ngIf="project.projectStatus=='PENDING'" (click)="deleteProject(project.id)" rounded="true" icon="pi pi-trash" class="p-button-text"
                       [styleClass]="'small-button'" severity="danger"></p-button>
-
           </td>
         </tr>
       </ng-template>

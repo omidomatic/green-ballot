@@ -1,0 +1,40 @@
+.background{
+
+  height: 100vh; /* Full viewport height */
+  z-index: -1;
+  background-image: url("../../../assets/images/admin_background_tile.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.justify-content-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+::ng-deep .small-button{
+  font-size: 16px;
+  padding: 0.2rem 0.4rem;
+  margin:0.2rem 0.2rem;
+  height: 32px;
+  width: 32px;
+  line-height: 24px;
+}
+.input-wrapper label {
+  background: linear-gradient(135deg, #614385 0%, #516395 100%); /* Apply your gradient or background color */
+  width: 200px; /* Fixed width for labels */
+  margin-right: 0rem; /* Space between label and input */
+  display: flex;
+  border-bottom-left-radius: 8px;
+  border-top-left-radius: 8px;
+  align-items: center;
+  align-self: stretch; /* Allows the label to stretch with the input field */
+  padding:8px;
+  color:#fff5f5;
+}
+.input-wrapper {
+  display: flex;
+  align-items: start;
+  margin-bottom: 8px; /* Optional: add some spacing between form rows */
+}

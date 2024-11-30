@@ -3,6 +3,12 @@ import {NgModule} from "@angular/core";
 
 // export const routes: Routes = [];
 export const routes: Routes = [
+
+  {
+    path: 'admin',
+    loadChildren: () => import('./pages/admin/admin.module')
+      .then(m => m.AdminModule),
+  },
   {
     path: 'landing',
     loadChildren: () => import('./pages/landing/landing.module')
@@ -38,6 +44,7 @@ export const routes: Routes = [
     redirectTo: '/landing',
     pathMatch: 'full'
   },
+
 
 ];
 

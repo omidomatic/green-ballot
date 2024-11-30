@@ -40,9 +40,10 @@ import {AccountService} from "../../service/account.service";
 import {FormSyncService} from "../../service/form-sync.service";
 import {BehaviorSubject} from 'rxjs';
 import {NewProjectService} from "../../service/new-project.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Route, Router} from "@angular/router";
 import {ConstantsService} from "../../service/constants.service";
 import {CaptchaComponent} from "../../util/captcha/captcha.component";
+import {GreenProjectService} from "../../service/green-project.service";
 
 interface ProjectCategory {
   name: string;
@@ -88,6 +89,7 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
 
   budgetDialogVisible: boolean = false;
   locationDialogVisible: boolean = false;
+  editMode: boolean = false;
 
   @ViewChild(CaptchaComponent) captcha!: CaptchaComponent;
   @ViewChild('mapElement', {static: true}) mapElement!: ElementRef;
@@ -156,7 +158,9 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
               private accountService: AccountService,
               private formSyncService: FormSyncService,
               private newProjectService: NewProjectService,
-              private router: Router
+              private router: Router,
+              private route: ActivatedRoute,
+              private greenProjectService: GreenProjectService
   ) {
     this.proposalUploadUrl = this.cs.getAPIUrl() + this.proposalUploadUrl;
     this.presentationUploadUrl = this.cs.getAPIUrl() + this.presentationUploadUrl;
@@ -206,25 +210,43 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.accountService.getAccountInfo().subscribe((res: any) => {
-      this.projectDetails.userId = res.id;
-      this.projectDetails.submittedBy = res.email;
+    var projectId: number;
+    this.route.params.subscribe(params => {
+      this.editMode = true;
+      if (params['id']) {
+        projectId = params['id'];
+        this.greenProjectService.getProjectById(projectId).subscribe((res: any) => {
+          this.projectDetails = res;
+          this.projectDetails.startDate = new Date(res.startDate);
+          this.projectDetails.endDate = new Date(res.endDate);
+          this.editMode=true;
+          console.log(res);
+        })
+      }
 
-      this.formCacheService.getProjectDetails(this.projectDetails.userId).subscribe((data: any) => {
-        if (data) {
-          this.projectDetails = {...this.projectDetails, ...data};
-          this.projectDetails.startDate = new Date(this.projectDetails.startDate);
-          this.projectDetails.endDate = new Date(this.projectDetails.endDate);
-          this.populateAllocationsFromProjectDetails();
+      this.accountService.getAccountInfo().subscribe((res: any) => {
+        this.projectDetails.userId = res.id;
+        this.projectDetails.submittedBy = res.email;
 
-          this.projectDetails$.subscribe(() => this.startCachingFormData());
-        }
+        this.formCacheService.getProjectDetails(this.projectDetails.userId).subscribe((data: any) => {
+          if (data) {
+            this.projectDetails = {...this.projectDetails, ...data};
+            this.projectDetails.startDate = new Date(this.projectDetails.startDate);
+            this.projectDetails.endDate = new Date(this.projectDetails.endDate);
+            this.populateAllocationsFromProjectDetails();
+
+            this.projectDetails$.subscribe(() => this.startCachingFormData());
+          }
+        });
       });
+
+
     });
 
     this.markerLayer = new VectorLayer({
       source: this.markerSource
     });
+
     this.projectCategories = [
       {name: "ClimateAction"},
       {name: "RenewableEnergy"},
@@ -459,11 +481,13 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
   }
 
   submit() {
+    //todo send update request for greenproject and write an endpoint
     if (this.captcha.isValidated) {
       if (this.isProjectDetailsComplete()) {
         this.projectDetails.category = this.projectDetails.category.name;
         this.projectDetails.startDate = this.convertToDateOnly(this.projectDetails.startDate);
         this.projectDetails.endDate = this.convertToDateOnly(this.projectDetails.endDate);
+        if(!this.editMode){
 
         this.newProjectService.uploadProject(this.projectDetails).subscribe(
           {
@@ -487,6 +511,37 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
               });
             }
           });
+        }
+        else {
+
+
+          this.projectDetails.location = JSON.parse(this.projectDetails.location);
+          this.projectDetails.fundingAllocation = JSON.parse(this.projectDetails.fundingAllocation);
+
+          console.log(this.projectDetails.location);
+          this.newProjectService.updateProject(this.projectDetails).subscribe(
+            {
+              next: (res: any) => {
+                console.log('submit result:', res);
+
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Project Submitted Successfully',
+                  detail: 'Your project has been submitted for review. You will be notified once it has been evaluated.',
+                });
+
+                this.router.navigate(['/account']);
+              },
+              error: (err) => {
+                console.log("Failed to register project!");
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Project Submission Failed',
+                  detail: 'An error occurred while submitting your project. Please try again later or contact support if the issue persists.',
+                });
+              }
+            });
+        }
       } else {
         this.messageService.add({
           severity: 'warn',
@@ -508,7 +563,6 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
     this.formCacheService.clearServerCache(this.projectDetails.userId);
 
     this.projectDetails = {
-      userId: '',
       name: '',
       category: '',
       description: '',
@@ -530,46 +584,39 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
       impactGoals: '',
       challengesAndRisks: '',
       sustainabilityPlan: '',
-      submittedBy: 'user goes here',
     };
-
-
   }
 
   fillWithDummyData() {
     this.projectDetails = {
-      userId: '1',
-      name: 'Green Energy Initiative',
-      category: {name: 'Renewable Energy'},
-      description: 'A project focused on developing sustainable energy solutions for rural areas.',
-      location: {
-        latitude: 40.712776,
-        longitude: -74.005974
-      },
-      targetOutcomes: 'Reduce carbon footprint by 30% within 5 years',
-      keywords: 'green, renewable, sustainable, energy',
-      startDate: new Date('2024-11-15'),
-      endDate: new Date('2025-05-15'),
-      projectLeadName: 'Alice Johnson',
-      projectLeadContact: '+1 (555) 123-4567',
-      fundingGoal: '1000000',
+      name: 'Mountain Watershed Preservation',
+      category: {name: 'Water Resource Management'},
+      description: 'A project designed to protect mountain watersheds and ensure clean water supply for nearby communities.',
+      location: {latitude: 39.739236, longitude: -104.990251},
+      targetOutcomes: 'Preserve 500 hectares of watershed and improve water flow by 20%',
+      keywords: 'watershed, clean water, preservation, sustainable management',
+      startDate: '2025-05-01',
+      endDate: '2027-12-31',
+      projectLeadName: 'James Rivers',
+      projectLeadContact: '+1 (555) 876-5432',
+      fundingGoal: '3500000',
       fundingAllocation: [
-        {title: 'Equipment', percentage: 40},
-        {title: 'Labor', percentage: 30},
-        {title: 'Marketing', percentage: 20},
-        {title: 'Miscellaneous', percentage: 10}
+        {title: 'Erosion Control', percentage: 30},
+        {title: 'Reforestation', percentage: 25},
+        {title: 'Water Monitoring', percentage: 20},
+        {title: 'Community Education', percentage: 15},
+        {title: 'Maintenance and Equipment', percentage: 10}
       ],
-      videoUrl: 'https://example.com/project-video',
-      websiteUrl: 'https://example.com',
-      socialMediaLinks: 'https://twitter.com/GreenEnergyProj',
-      proposal: 'https://example.com/proposal.pdf',
-      presentation: 'https://example.com/presentation.pptx',
-      teamMembers: 'Alice Johnson, Bob Smith, Clara Lee',
-      impactGoals: 'Provide clean energy to 500 households, create 50 new jobs',
-      challengesAndRisks: 'Lack of funding, regulatory hurdles, weather disruptions',
-      sustainabilityPlan: 'Solar panels with a 25-year warranty and recycling program for old equipment',
-      submittedBy: 'user@example.com',
-    };
+      videoUrl: 'https://example.com/watershed-video',
+      websiteUrl: 'https://mountainwatershed.org',
+      socialMediaLinks: 'https://twitter.com/MountainWatershedProj',
+      proposal: 'https://example.com/watershed-proposal.pdf',
+      presentation: 'https://example.com/watershed-presentation.pptx',
+      teamMembers: 'James Rivers, Clara Stream, Henry Hill',
+      impactGoals: 'Enhance water quality, prevent soil erosion, and support local biodiversity',
+      challengesAndRisks: 'Climate variability, limited community engagement, and high maintenance costs',
+      sustainabilityPlan: 'Implement eco-friendly erosion control methods and involve local stakeholders for long-term support'
+    }
   }
 
   openAllTabs() {

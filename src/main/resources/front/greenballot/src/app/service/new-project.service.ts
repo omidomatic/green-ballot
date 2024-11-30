@@ -20,4 +20,11 @@ export class NewProjectService {
     return this.http.post(this.apiUrl + "/new", projectDetails,{headers: headers});
   }
 
+  updateProject(projectDetails:any){
+    const headers = new HttpHeaders({'Content-Type': 'application/json'});
+    console.log(projectDetails);
+    return this.http.patch(this.apiUrl + "/update", projectDetails,{headers: headers});
+
+  }
+
 }

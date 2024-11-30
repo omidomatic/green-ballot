@@ -2,7 +2,9 @@ package com.greenballot.voting.controller;
 
 import com.google.gson.Gson;
 import com.greenballot.voting.dto.GreenProjectDto;
+import com.greenballot.voting.dto.UpdateGreenProjectDto;
 import com.greenballot.voting.model.GreenProject;
+import com.greenballot.voting.model.enums.ProjectStatus;
 import com.greenballot.voting.service.GreenProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -65,6 +68,12 @@ public class GreenProjectController {
         return ResponseEntity.ok(projectService.addNewProject(projectDto));
     }
 
+    @Transactional
+    @PatchMapping("/update")
+    public ResponseEntity<String> updateProject(@RequestBody UpdateGreenProjectDto projectDto){
+        return ResponseEntity.ok(projectService.updateProject(projectDto));
+    }
+
     @PostMapping("/upload-proposal")
     public ResponseEntity<String> uploadProposal(@RequestParam("file") MultipartFile file) {
         Map<String, String> result = projectService.uploadProposal(file);
@@ -84,10 +93,41 @@ public class GreenProjectController {
         else
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(gson.toJson(result));
     }
+
     @Transactional
     @GetMapping("/get-projects")
     public Page<GreenProject> getUserProjects(@RequestParam String userId, Pageable pageable) {
-        return projectService.getUserProjects(userId, pageable);
+        return projectService.getUserProjects(userId, ProjectStatus.DELETED, pageable);
     }
 
+    @Transactional
+    @GetMapping("/get-project-by-status")
+    public Page<GreenProject> getProjectByStatus(@RequestParam String projectStatus, Pageable pageable) {
+
+        return projectService.getProjectByStatus(ProjectStatus.valueOf(projectStatus), pageable);
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteProject(@RequestBody Long id) {
+        return projectService.deleteProject(id);
+    }
+
+    @GetMapping("/get-project")
+    public ResponseEntity<GreenProject> getProjectById(@RequestParam Long id){
+        return projectService.getProjectById(id);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @Transactional
+    @PostMapping("/verify")
+    public ResponseEntity<String> verifyProject(@RequestBody Long id) {
+        return projectService.verifyProject(id);
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
+    @Transactional
+    @PostMapping("/reject")
+    public ResponseEntity<String> rejectProject(@RequestBody Long id) {
+        return projectService.rejectProject(id);
+    }
 }
