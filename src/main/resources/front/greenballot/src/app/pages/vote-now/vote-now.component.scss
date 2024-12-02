@@ -1,0 +1,22 @@
+.background{
+  height: 100vh;
+  z-index: -1;
+  background-image: url("../../../assets/images/get-involved-banner.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat-y;
+}
+.justify-content-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.card{
+  position: sticky;
+  top: 20px; // Distance from the top of the viewport
+  z-index: 10; // Higher than the background to ensure it appears on top
+  width:770px;
+  padding: 1.5rem;
+  border-radius: 8px;
+  overflow: auto;
+}

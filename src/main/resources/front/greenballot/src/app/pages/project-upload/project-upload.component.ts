@@ -82,6 +82,7 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
 
   proposalUploadUrl = "api/v1/project/upload-proposal";
   presentationUploadUrl = "api/v1/project/upload-presentation";
+  featuredImageUploadUrl = "api/v1/project/upload-image"
 
   invalidFields: { [key: string]: boolean } = {};
   fundingForm: FormGroup;
@@ -134,6 +135,7 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
     socialMediaLinks: '',
     proposal: '',
     presentation: '',
+    featuredImage: '',
 
     // Team and Impact
     teamMembers: '',
@@ -164,6 +166,7 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
   ) {
     this.proposalUploadUrl = this.cs.getAPIUrl() + this.proposalUploadUrl;
     this.presentationUploadUrl = this.cs.getAPIUrl() + this.presentationUploadUrl;
+    this.featuredImageUploadUrl = this.cs.getAPIUrl() + this.featuredImageUploadUrl;
     this.fundingForm = this.fb.group({
       allocations: this.fb.array([this.createAllocationGroup()])
     });
@@ -212,14 +215,13 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     var projectId: number;
     this.route.params.subscribe(params => {
-      this.editMode = true;
       if (params['id']) {
         projectId = params['id'];
         this.greenProjectService.getProjectById(projectId).subscribe((res: any) => {
           this.projectDetails = res;
           this.projectDetails.startDate = new Date(res.startDate);
           this.projectDetails.endDate = new Date(res.endDate);
-          this.editMode=true;
+          this.editMode = true;
           console.log(res);
         })
       }
@@ -481,42 +483,39 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-
     if (this.captcha.isValidated) {
       if (this.isProjectDetailsComplete()) {
         this.projectDetails.category = this.projectDetails.category.name;
         this.projectDetails.startDate = this.convertToDateOnly(this.projectDetails.startDate);
         this.projectDetails.endDate = this.convertToDateOnly(this.projectDetails.endDate);
-        if(!this.editMode){
+        if (!this.editMode) {
 
-        this.newProjectService.uploadProject(this.projectDetails).subscribe(
-          {
-            next: (res: any) => {
-              console.log('submit result:', res);
+          this.newProjectService.uploadProject(this.projectDetails).subscribe(
+            {
+              next: (res: any) => {
+                console.log('submit result:', res);
 
-              this.messageService.add({
-                severity: 'success',
-                summary: 'Project Submitted Successfully',
-                detail: 'Your project has been submitted for review. You will be notified once it has been evaluated.',
-              });
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Project Submitted Successfully',
+                  detail: 'Your project has been submitted for review. You will be notified once it has been evaluated.',
+                });
 
-              this.router.navigate(['/account']);
-            },
-            error: (err) => {
-              console.log("Failed to register project!");
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Project Submission Failed',
-                detail: 'An error occurred while submitting your project. Please try again later or contact support if the issue persists.',
-              });
-            }
-          });
-        }
-        else {
+                this.router.navigate(['/account']);
+              },
+              error: (err) => {
+                console.log("Failed to register project!");
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Project Submission Failed',
+                  detail: 'An error occurred while submitting your project. Please try again later or contact support if the issue persists.',
+                });
+              }
+            });
+        } else {
 
-
-          this.projectDetails.location = JSON.parse(this.projectDetails.location);
-          this.projectDetails.fundingAllocation = JSON.parse(this.projectDetails.fundingAllocation);
+            this.projectDetails.location = JSON.parse(this.projectDetails.location.toString());
+            this.projectDetails.fundingAllocation = JSON.parse(this.projectDetails.fundingAllocation);
 
           console.log(this.projectDetails.location);
           this.newProjectService.updateProject(this.projectDetails).subscribe(
@@ -621,5 +620,73 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
 
   openAllTabs() {
     this.activeIndices = [0, 1, 2, 3, 4, 5, 6];
+  }
+
+  onFeaturedImageUpload(event: any) {
+    const file = event.files[0]; // Get the first file from the selected files
+    const token = localStorage.getItem('access_token'); // Adjust this if token is stored elsewhere
+
+    if (!file.type.startsWith('image/')) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Invalid File',
+        detail: 'Please upload a valid image file!'
+      });
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      const img = new Image();
+      img.src = e.target?.result as string;
+
+      img.onload = () => {
+        const maxWidth = 1920; // Adjust as per your requirement
+        const maxHeight = 1080; // Adjust as per your requirement
+
+        const width = img.width;
+        const height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Invalid Dimensions',
+            detail: `Image dimensions must not exceed ${maxWidth}x${maxHeight} pixels.`
+          });
+          return;
+        }
+
+        // Proceed with the upload if dimensions are valid
+        const formData: FormData = new FormData();
+        formData.append('file', file, file.name);
+
+        const headers = new HttpHeaders({
+          Authorization: `Bearer ${token}`,
+        });
+
+        this.http.post(this.featuredImageUploadUrl, formData, {headers})
+          .subscribe({
+            next: (response: any) => {
+              console.log('File uploaded successfully:', response);
+              this.projectDetails.featuredImage = response.filename;
+              this.messageService.add({
+                severity: 'info',
+                summary: 'Success',
+                detail: 'Featured image uploaded successfully!'
+              });
+            },
+            error: error => {
+              console.error('File upload failed:', error);
+              this.messageService.add({severity: 'error', summary: 'Failed', detail: 'Failed to upload file!'});
+            }
+          });
+      };
+
+      img.onerror = () => {
+        this.messageService.add({severity: 'error', summary: 'Error', detail: 'Unable to load the image file!'});
+      };
+    };
+
+    reader.readAsDataURL(file); // Read the image file
   }
 }

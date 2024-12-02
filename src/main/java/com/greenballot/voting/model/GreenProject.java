@@ -55,6 +55,8 @@ public class GreenProject {
 
     private String presentation;
 
+    private String featuredImage;
+
     private String keywords;
     private Long voteCount;
     private LocalDate votingDue;

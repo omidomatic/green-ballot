@@ -84,6 +84,15 @@ public class GreenProjectController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(gson.toJson(result));
     }
 
+    @PostMapping("/upload-image")
+    public ResponseEntity<String> uploadFeaturedImage(@RequestParam("file") MultipartFile file) {
+        Map<String, String> result = projectService.uploadFeaturedImage(file);
+        Gson gson = new Gson();
+        if (result.get("status").equals("0"))
+            return ResponseEntity.status(HttpStatus.OK).body(gson.toJson(result));
+        else
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(gson.toJson(result));
+    }
     @PostMapping("/upload-presentation")
     public ResponseEntity<String> uploadPresentation(@RequestParam("file") MultipartFile file) {
         Map<String, String> result = projectService.uploadPresentation(file);

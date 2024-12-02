@@ -81,6 +81,7 @@ public class GreenProjectService {
                 .proposal(projectDto.getProposal())
                 .keywords(projectDto.getKeywords())
                 .presentation(projectDto.getPresentation())
+                .featuredImage(projectDto.getFeaturedImage())
                 .socialMediaLinks(projectDto.getSocialMediaLinks())
                 .voteCount(0L)
                 .build();
@@ -254,6 +255,7 @@ public class GreenProjectService {
             newProject.setKeywords(projectDto.getKeywords());
             newProject.setPresentation(projectDto.getPresentation());
             newProject.setSocialMediaLinks(projectDto.getSocialMediaLinks());
+            newProject.setFeaturedImage(projectDto.getFeaturedImage());
             newProject.setVoteCount(0L);
             repository.save(newProject);
             response.put("status", "0");
@@ -264,5 +266,33 @@ public class GreenProjectService {
         }
 
         return gson.toJson(response);
+    }
+
+    public Map<String, String> uploadFeaturedImage(MultipartFile file) {
+        Map<String, String> response = new HashMap<>();
+        System.out.println("trying to upload file!");
+        String uuid = UUID.randomUUID().toString();
+        Gson gson = new Gson();
+        String filename = uuid.split("-")[uuid.split("-").length - 1] + "-" + file.getOriginalFilename();
+        try {
+            try {
+                Files.copy(file.getInputStream(), this.rootLocation.resolve(filename));
+            } catch (Exception e) {
+                throw new RuntimeException("FAIL!");
+            }
+            files.add(file.getOriginalFilename());
+
+            response.put("message", "Successfully uploaded!");
+            response.put("filename", filename);
+            response.put("status", "0");
+
+            return response;
+        } catch (Exception e) {
+
+            response.put("message", "Failed to upload file!");
+            response.put("status", "1");
+
+            return response;
+        }
     }
 }

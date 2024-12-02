@@ -26,6 +26,7 @@ public class GreenProjectDto {
     private String projectLeadContact;
     private String fundingGoal;
     private List<FundingAllocationDto> fundingAllocation;
+    private String featuredImage;
     private String videoUrl;
     private String websiteUrl;
     private String challengesAndRisks;

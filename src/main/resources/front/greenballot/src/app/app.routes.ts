@@ -15,6 +15,11 @@ export const routes: Routes = [
       .then(m => m.LandingModule),
   },
   {
+    path: 'vote-now',
+    loadChildren: () => import('./pages/vote-now/vote-now.module')
+      .then(m => m.VoteNowModule),
+  },
+  {
     path: 'login',
     loadChildren: () => import('./pages/auth/login/login.module')
       .then(m => m.LoginModule),
