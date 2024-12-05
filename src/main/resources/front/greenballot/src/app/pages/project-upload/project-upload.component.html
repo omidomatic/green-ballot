@@ -133,7 +133,7 @@
             <div class="input-wrapper" [ngClass]="{ 'input-error': invalidFields['featuredImage'] }">
               <label for="featured-image">Featured Image  <p style="font-size:9px; color:#dab6fc;"> [1920 X 1080]</p></label>
               <p-fileUpload id="featured-image" name="file[]" (onUpload)="onUpload($event)" (uploadHandler)="onFeaturedImageUpload($event)"
-                            customUpload="true" [multiple]="false" accept=".jpg, .jpeg, .png" maxFileSize="50000000">
+                            customUpload="true" [multiple]="false" accept=".jpg, .jpeg" maxFileSize="50000000">
                 <ng-template pTemplate="content">
                   <ul *ngIf="uploadedFiles.length">
                     <li *ngFor="let file of uploadedFiles">{{ file.name }} - {{ file.size }} bytes</li>

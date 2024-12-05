@@ -11,6 +11,7 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class VoteRecord {
@@ -18,8 +19,8 @@ public class VoteRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long proposalId;
     private Long userId;
     private Vote vote;
+    private Long projectId;
 
 }

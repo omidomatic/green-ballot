@@ -588,34 +588,35 @@ export class ProjectUploadComponent implements OnInit, OnDestroy {
 
   fillWithDummyData() {
     this.projectDetails = {
-      name: 'Mountain Watershed Preservation',
-      category: {name: 'Water Resource Management'},
-      description: 'A project designed to protect mountain watersheds and ensure clean water supply for nearby communities.',
-      location: {latitude: 39.739236, longitude: -104.990251},
-      targetOutcomes: 'Preserve 500 hectares of watershed and improve water flow by 20%',
-      keywords: 'watershed, clean water, preservation, sustainable management',
-      startDate: '2025-05-01',
-      endDate: '2027-12-31',
-      projectLeadName: 'James Rivers',
-      projectLeadContact: '+1 (555) 876-5432',
-      fundingGoal: '3500000',
+      name: 'Desert Oasis Creation Project',
+      category: {name: 'Arid Land Rehabilitation'},
+      description: 'A project aimed at creating sustainable oases in desert regions to support wildlife and local communities.',
+      location: {latitude: 23.424076, longitude: 53.847818},
+      targetOutcomes: 'Establish 10 oases and support 50 species of desert flora and fauna',
+      keywords: 'desert, oasis, rehabilitation, sustainability, water management',
+      startDate: '2025-08-01',
+      endDate: '2028-07-31',
+      projectLeadName: 'Amira Sandstone',
+      projectLeadContact: '+971 50 123 4567',
+      fundingGoal: '5000000',
       fundingAllocation: [
-        {title: 'Erosion Control', percentage: 30},
-        {title: 'Reforestation', percentage: 25},
-        {title: 'Water Monitoring', percentage: 20},
-        {title: 'Community Education', percentage: 15},
-        {title: 'Maintenance and Equipment', percentage: 10}
+        {title: 'Water Resources Development', percentage: 40},
+        {title: 'Native Plant Cultivation', percentage: 25},
+        {title: 'Infrastructure for Wildlife', percentage: 15},
+        {title: 'Community Training', percentage: 10},
+        {title: 'Research and Monitoring', percentage: 10}
       ],
-      videoUrl: 'https://example.com/watershed-video',
-      websiteUrl: 'https://mountainwatershed.org',
-      socialMediaLinks: 'https://twitter.com/MountainWatershedProj',
-      proposal: 'https://example.com/watershed-proposal.pdf',
-      presentation: 'https://example.com/watershed-presentation.pptx',
-      teamMembers: 'James Rivers, Clara Stream, Henry Hill',
-      impactGoals: 'Enhance water quality, prevent soil erosion, and support local biodiversity',
-      challengesAndRisks: 'Climate variability, limited community engagement, and high maintenance costs',
-      sustainabilityPlan: 'Implement eco-friendly erosion control methods and involve local stakeholders for long-term support'
+      videoUrl: 'https://example.com/oasis-video',
+      websiteUrl: 'https://desertoasis.org',
+      socialMediaLinks: 'https://facebook.com/DesertOasisProj',
+      proposal: 'https://example.com/oasis-proposal.pdf',
+      presentation: 'https://example.com/oasis-presentation.pptx',
+      teamMembers: 'Amira Sandstone, Khalid Dunes, Layla Mirage',
+      impactGoals: 'Revive desert ecosystems, enhance water retention, and support local livelihoods',
+      challengesAndRisks: 'Water scarcity, extreme weather, and logistical challenges',
+      sustainabilityPlan: 'Utilize solar-powered water pumps and establish local nurseries for sustainable growth'
     }
+
   }
 
   openAllTabs() {

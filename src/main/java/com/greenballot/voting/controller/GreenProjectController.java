@@ -1,24 +1,39 @@
 package com.greenballot.voting.controller;
 
+import cn.apiclub.captcha.Captcha;
 import com.google.gson.Gson;
 import com.greenballot.voting.dto.GreenProjectDto;
 import com.greenballot.voting.dto.UpdateGreenProjectDto;
 import com.greenballot.voting.model.GreenProject;
 import com.greenballot.voting.model.enums.ProjectStatus;
 import com.greenballot.voting.service.GreenProjectService;
+import com.greenballot.voting.util.CaptchaUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/project")
@@ -29,6 +44,7 @@ public class GreenProjectController {
     private final RedisTemplate<String, Object> redisTemplate;
     private final Gson gson;
 
+    private final Path rootLocation = Paths.get("D:\\_Voting\\voting");
     @PostMapping("/cache")
     public void cacheFormData(@RequestBody Map<String, Object> formData) {
         String userId = formData.get("userId").toString();
@@ -138,5 +154,58 @@ public class GreenProjectController {
     @PostMapping("/reject")
     public ResponseEntity<String> rejectProject(@RequestBody Long id) {
         return projectService.rejectProject(id);
+    }
+
+    @GetMapping(value = "/download-file", name = "stream", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<StreamingResponseBody> download(@RequestParam(name = "filename") String filename) throws FileNotFoundException {
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment;filename=\"" + filename + "\"")
+                .body(projectService.download(filename));
+    }
+
+    @GetMapping("/download/{fileName}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request)  {
+        try {
+            Path filePath = this.rootLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Determine content type
+            String contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping(value = "/featured-image/{fileName}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Resource> getFeaturedImage(@PathVariable String fileName) {
+        try {
+            Path filePath = this.rootLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG) // Change this to match your image type (e.g., IMAGE_PNG)
+                    .body(resource);
+        } catch (MalformedURLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

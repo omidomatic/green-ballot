@@ -15,8 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -294,5 +299,12 @@ public class GreenProjectService {
 
             return response;
         }
+    }
+
+    public StreamingResponseBody download(String fileName) throws FileNotFoundException {
+        String filePath = this.rootLocation + "/" + fileName;
+        InputStream inputStream = new FileInputStream(filePath);
+        StreamingResponseBody body = outputStream -> FileCopyUtils.copy(inputStream, outputStream);
+        return body;
     }
 }

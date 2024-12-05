@@ -1,9 +1,74 @@
-<div class="background">
-  <p-toast></p-toast>
-  <div class="justify-content-center">
-    <div class="card">
-      <p-card header="Vote Now" subheader="Vote now and help heal the earth.">
-      </p-card>
+<div class="project-wrapper">
+  <div class="project-card p-card" *ngIf="currentProject">
+    <p-dialog header="" [modal]="true" [(visible)]="imageViewDialogVisible"
+              [style]="{ width: '250rem' }">
+      <a (click)="toggleViewImage()"> <img
+        *ngIf="imageUrl"
+        [src]="imageUrl"
+        alt="Featured Image"
+        class=""
+      /></a>
+
+    </p-dialog>
+
+
+    <div class="p-card-header">
+      <a (click)="toggleViewImage()"> <img
+        *ngIf="imageUrl"
+        [src]="imageUrl"
+        alt="Featured Image"
+        class="project-image"
+      /></a>
+      <p *ngIf="!imageUrl">Loading image...</p>
+      <h2>{{ currentProject.name }}</h2>
     </div>
+    <div class="p-card-body">
+      <p><strong>Category:</strong> {{ currentProject.category?.name }}</p>
+      <p><strong>Description:</strong> {{ currentProject.description }}</p>
+      <p><strong>Location:</strong> {{ currentProject.location?.city }}, {{ currentProject.location?.country }}</p>
+      <p><strong>Target Outcomes:</strong> {{ currentProject.targetOutcomes }}</p>
+      <p><strong>Timeline:</strong> {{ currentProject.startDate | date }} - {{ currentProject.endDate | date }}</p>
+      <p><strong>Funding Goal:</strong> {{ currentProject.fundingGoal | currency }}</p>
+      <div class="media-links">
+        <a *ngIf="currentProject.videoUrl" [href]="currentProject.videoUrl" target="_blank">Watch Video</a>
+        <a *ngIf="currentProject.websiteUrl" [href]="currentProject.websiteUrl" target="_blank">Visit Website</a>
+      </div>
+    </div>
+    <div class="p-card-footer">
+      <p-button rounded="true"
+                pButton
+                severity="danger"
+                icon="pi pi-thumbs-down"
+                class="p-button-danger vote-button"
+                (click)="vote(currentProject.userId,currentProject.id, 'DOWN')"
+      ></p-button>
+      <p-button rounded="true"
+                pButton
+                severity="success"
+                icon="pi pi-thumbs-up"
+                class="p-button-success vote-button"
+                (click)="vote(currentProject.userId,currentProject.id, 'UP')"
+      ></p-button>
+
+    </div>
+  </div>
+  <div class="navigation-buttons">
+    <p-button
+      severity="info"
+      class="p-button-secondary "
+      (click)="previousProject()"
+      [disabled]="currentIndex === 0"
+    >
+      <i class="pi pi-arrow-left navigation-button"></i>
+    </p-button>
+
+    <p-button
+      severity="info"
+      class="p-button-secondary"
+      (click)="nextProject()"
+      [disabled]="currentIndex === projects.length - 1"
+    >
+      <i class="pi pi-arrow-right navigation-button"></i>
+    </p-button>
   </div>
 </div>

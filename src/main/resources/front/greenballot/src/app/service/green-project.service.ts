@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {ConstantsService} from "./constants.service";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpHeaders, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 
 
@@ -67,4 +67,17 @@ export class GreenProjectService {
     });
   }
 
+  downloadFile(filename:string):Observable<any>{
+    var headers = new HttpHeaders().set('Content-Type', 'application/json');
+
+    // headers.set('Authorization', 'bearer ' + localStorage.getItem('token'))
+    return this.http.get(this.apiUrl + '/featured-image/'+filename);
+
+  }
+
+  getFeaturedImage(fileName: string):Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/featured-image/${fileName}`, {
+      responseType: 'blob', // Fetch binary data
+    });
+  }
 }
