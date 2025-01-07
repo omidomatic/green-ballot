@@ -111,11 +111,6 @@ This project is built using **Spring Boot** for the backend and **Angular** for 
 
 ---
 
-## 📸 Screenshots
-*(Add screenshots of your platform here, showcasing the dashboard, project submission, map integration, etc.)*
-
----
-
 ## 🔒 Security Features
 
 - **JWT Authentication**: Secure, stateless authentication for API endpoints.
@@ -150,4 +145,4 @@ This project is licensed under the [MIT License](LICENSE). Feel free to use, mod
 
 ## 🌐 Contact
 
-For questions or feedback, please reach out to us at [your-email@example.com](mailto:your-email@example.com).
+For questions or feedback, please reach out to us at [omidomatic@gmail.com](mailto:omidomatic@gmail.com).
